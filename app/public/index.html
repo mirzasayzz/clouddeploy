@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudDeploy | Infrastructure Dashboard</title>
+    <style>
+        /* Modern Reset & Base Styles */
+        :root {
+            --primary: #2563eb;
+            --secondary: #475569;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        
+        body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Navigation */
+        nav {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-weight: 700; font-size: 1.25rem; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+        .logo span { color: var(--text-main); }
+
+        /* Main Content */
+        main { flex: 1; padding: 2rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+        h1 { margin-bottom: 0.5rem; font-size: 1.8rem; }
+        p.subtitle { color: var(--text-muted); margin-bottom: 2rem; }
+
+        /* Metrics Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+        .card h3 { color: var(--text-muted); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .card .value { font-size: 2rem; font-weight: 700; color: var(--text-main); }
+        .card .trend { font-size: 0.875rem; margin-top: 0.5rem; }
+        .trend.up { color: var(--success); }
+
+        /* Deployments Table */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        
+        .table-header { padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .table-header h2 { font-size: 1.25rem; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid #f1f5f9; }
+        th { background: #f8fafc; color: var(--text-muted); font-weight: 600; font-size: 0.875rem; }
+        tr:last-child td { border-bottom: none; }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-badge.healthy { background: #dcfce7; color: #166534; }
+        .status-badge.syncing { background: #dbeafe; color: #1e40af; }
+
+        /* Footer */
+        footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.875rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+            <span>CloudDeploy</span>
+        </div>
+        <div style="font-weight: 500;">admin@clouddeploy.com</div>
+    </nav>
+
+    <main>
+        <h1>System Overview</h1>
+        <p class="subtitle">Real-time infrastructure performance and deployment metrics</p>
+
+        <div class="grid">
+            <div class="card">
+                <h3>System Uptime</h3>
+                <div class="value">99.9%</div>
+                <div class="trend up">▲ 0.1% vs last month</div>
+            </div>
+            <div class="card">
+                <h3>Active Containers</h3>
+                <div class="value">42</div>
+                <div class="trend">Running on AWS ECS</div>
+            </div>
+            <div class="card">
+                <h3>Avg Response Time</h3>
+                <div class="value">45ms</div>
+                <div class="trend up">▼ 12ms improvement</div>
+            </div>
+            <div class="card">
+                <h3>Successful Deploys</h3>
+                <div class="value">1,284</div>
+                <div class="trend up">Since inception</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-header">
+                <h2>Active Microservices</h2>
+                <button onclick="fetchDeployments()" style="padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer;">Refresh Data</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service Name</th>
+                        <th>Version</th>
+                        <th>Last Deployed</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="deployment-list">
+                    <!-- Data populated by JS -->
+                    <tr><td colspan="4" style="text-align:center;">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2024 CloudDeploy Platform. Powered by Docker, Jenkins, & Ansible.
+    </footer>
+
+    <script>
+        async function fetchDeployments() {
+            const list = document.getElementById('deployment-list');
+            try {
+                const res = await fetch('/api/deployments');
+                const data = await res.json();
+                
+                list.innerHTML = data.map(svc => `
+                    <tr>
+                        <td style="font-weight: 500;">${svc.service}</td>
+                        <td style="font-family: monospace; color: var(--text-muted);">${svc.version}</td>
+                        <td style="color: var(--text-muted);">${svc.lastDeployed}</td>
+                        <td><span class="status-badge ${svc.status.toLowerCase()}">${svc.status}</span></td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                list.innerHTML = `<tr><td colspan="4" style="text-align:center; color: red;">Failed to load data</td></tr>`;
+            }
+        }
+
+        // Initial Load
+        fetchDeployments();
+    </script>
+</body>
+</html>

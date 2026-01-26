@@ -1,0 +1,32 @@
+---
+- name: Deploy CloudDeploy Application
+  hosts: webservers
+  vars:
+    # Default to latest if not provided
+    image_tag: "{{ lookup('env', 'BUILD_NUMBER') | default('latest') }}"
+    registry: "registry.example.com"
+    app_port: 80
+
+  tasks:
+    - name: Pull Docker Image
+      community.docker.docker_image:
+        name: "{{ registry }}/clouddeploy-app"
+        tag: "{{ image_tag }}"
+        source: pull
+      # Ignore errors for demo purposes since registry is a placeholder
+      ignore_errors: yes
+
+    - name: Stop running container
+      community.docker.docker_container:
+        name: clouddeploy-web
+        state: absent
+
+    - name: Run Web App Container
+      community.docker.docker_container:
+        name: clouddeploy-web
+        image: "clouddeploy-app:{{ image_tag }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "{{ app_port }}:3000"
+      # Using local image if pull failed (for demo/local testing)
