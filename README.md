@@ -3,6 +3,9 @@
 ## Overview
 **CloudDeploy** is a comprehensive CI/CD Web Application Platform demonstrating a modern DevOps pipeline. It features a scalable Node.js web application, containerized with Docker, automated by Jenkins, and deployed to AWS infrastructure provisioned via Terraform and thoroughly configured using Ansible.
 
+<img width="1250" height="2223" alt="dfd" src="https://github.com/user-attachments/assets/05ccd299-2a03-4980-85c4-2abd88251d4c" />
+
+
 ## Key Technologies
 - **Application**: Node.js, Express, HTML5/CSS3 Dashboard.
 - **Containerization**: Docker, Docker Compose.
